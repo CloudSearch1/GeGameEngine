@@ -95,7 +95,7 @@ namespace GeRendering::LowRenderer
 		GeRendering::Data::Frustum m_frustum;
 		GeMaths::FMatrix4 m_viewMatrix;
 		GeMaths::FMatrix4 m_projectionMatrix;
-        GeRendering::Settings::EProjectionMode m_projectionMode;
+    GeRendering::Settings::EProjectionMode m_projectionMode;
 
 		float m_fov;
     float m_size;

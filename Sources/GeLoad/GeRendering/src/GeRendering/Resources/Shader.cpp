@@ -104,14 +104,16 @@ bool GeRendering::Resources::Shader::IsEngineUBOMember(const std::string & p_uni
 
 uint32_t GeRendering::Resources::Shader::GetUniformLocation(const std::string& name)
 {
+  //查找uniform定位缓存中是否有我们想要定位的uniform
 	if (m_uniformLocationCache.find(name) != m_uniformLocationCache.end())
 		return m_uniformLocationCache.at(name);
 
 	const int location = glGetUniformLocation(id, name.c_str());
-
-	/*if (location == -1)
-		OVLOG_WARNING("Uniform: '" + name + "' doesn't exist");*/
-
+  if (location == -1)
+  {
+    //--如果没有找到uniform则返回错误值
+    
+  }
 	m_uniformLocationCache[name] = location;
 
 	return location;
