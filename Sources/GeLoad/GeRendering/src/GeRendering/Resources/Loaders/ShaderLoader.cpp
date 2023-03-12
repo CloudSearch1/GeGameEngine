@@ -3,177 +3,176 @@
 
 #include <GL/glew.h>
 
-//#include <GeDebug/Logger.h>
 
 #include "GeRendering/Resources/Loaders/ShaderLoader.h"
-
-std::string GeRendering::Resources::Loaders::ShaderLoader::__FILE_TRACE;
-
-GeRendering::Resources::Shader* GeRendering::Resources::Loaders::ShaderLoader::Create(const std::string& p_filePath)
+namespace GeRendering::Resources
 {
-	__FILE_TRACE = p_filePath;
 
-	std::pair<std::string, std::string> source = ParseShader(p_filePath);
+  std::string Loaders::ShaderLoader::__FILE_TRACE;
 
-	uint32_t programID = CreateProgram(source.first, source.second);
+  Shader* Loaders::ShaderLoader::Create(const std::string& p_filePath)
+  {
+    __FILE_TRACE = p_filePath;
 
-	if (programID)
-		return new Shader(p_filePath, programID);
+    std::pair<std::string, std::string> source = ParseShader(p_filePath);
 
-	return nullptr;
-}
+    //创建GL程序
+    uint32_t programID = CreateProgram(source.first, source.second);
+    //如果GL程序创建成功则创建shader
+    if (programID)
+      return new Shader(p_filePath, programID);
 
-GeRendering::Resources::Shader* GeRendering::Resources::Loaders::ShaderLoader::CreateFromSource(const std::string& p_vertexShader, const std::string& p_fragmentShader)
-{
-	uint32_t programID = CreateProgram(p_vertexShader, p_fragmentShader);
+    return nullptr;
+  }
 
-	if (programID)
-		return new Shader("", programID);
+  Shader* Loaders::ShaderLoader::CreateFromSource(const std::string& p_vertexShader, const std::string& p_fragmentShader)
+  {
+    uint32_t programID = CreateProgram(p_vertexShader, p_fragmentShader);
 
-	return nullptr;
-}
+    if (programID)
+      return new Shader("", programID);
 
-void GeRendering::Resources::Loaders::ShaderLoader::Recompile(Shader& p_shader, const std::string& p_filePath)
-{
-	__FILE_TRACE = p_filePath;
+    return nullptr;
+  }
 
-	std::pair<std::string, std::string> source = ParseShader(p_filePath);
+  void Loaders::ShaderLoader::Recompile(Shader& p_shader, const std::string& p_filePath)
+  {
+    __FILE_TRACE = p_filePath;
 
-	uint32_t newProgram = CreateProgram(source.first, source.second);
+    std::pair<std::string, std::string> source = ParseShader(p_filePath);
 
-	if (newProgram)
-	{
-		std::uint32_t* shaderID = reinterpret_cast<uint32_t*>(&p_shader) + offsetof(Shader, id);
+    uint32_t newProgram = CreateProgram(source.first, source.second);
 
-    //删除之前的gl程序
-		glDeleteProgram(*shaderID);
+    if (newProgram)
+    {
+      std::uint32_t* shaderID = reinterpret_cast<uint32_t*>(&p_shader) + offsetof(Shader, id);
 
-    //在着色器中存储新的gl程序
-		*shaderID = newProgram;
+      //删除之前的gl程序
+      glDeleteProgram(*shaderID);
 
-		p_shader.QueryUniforms();
+      //在着色器中存储新的gl程序
+      *shaderID = newProgram;
 
-		//OVLOG_INFO("[COMPILE] \"" + __FILE_TRACE + "\": Success!");
-	}
-	else
-	{
-		//OVLOG_ERROR("[COMPILE] \"" + __FILE_TRACE + "\": Failed! Previous shader version keept");
-	}
-}
+      p_shader.QueryUniforms();
 
-bool GeRendering::Resources::Loaders::ShaderLoader::Destroy(Shader*& p_shader)
-{
-	if (p_shader)
-	{
-		delete p_shader;
-		p_shader = nullptr;
+    }
+  }
 
-		return true;
-	}
-	
-	return false;
-}
+  bool Loaders::ShaderLoader::Destroy(Shader*& p_shader)
+  {
+    if (p_shader)
+    {
+      delete p_shader;
+      p_shader = nullptr;
 
-std::pair<std::string, std::string> GeRendering::Resources::Loaders::ShaderLoader::ParseShader(const std::string& p_filePath)
-{
-	std::ifstream stream(p_filePath);
+      return true;
+    }
 
-	enum class ShaderType { NONE = -1, VERTEX = 0, FRAGMENT = 1 };
+    return false;
+  }
 
-	std::string line;
+  std::pair<std::string, std::string> Loaders::ShaderLoader::ParseShader(const std::string& p_filePath)
+  {
+    std::ifstream stream(p_filePath);
 
-	std::stringstream ss[2];
+    enum class ShaderType { NONE = -1, VERTEX = 0, FRAGMENT = 1 };
 
-	ShaderType type = ShaderType::NONE;
+    std::string line;
 
-	while (std::getline(stream, line))
-	{
-		if (line.find("#shader") != std::string::npos)
-		{
-			if (line.find("vertex") != std::string::npos)			type = ShaderType::VERTEX;
-			else if (line.find("fragment") != std::string::npos)	type = ShaderType::FRAGMENT;
-		}
-		else if (type != ShaderType::NONE)
-		{
-			ss[static_cast<int>(type)] << line << '\n';
-		}
-	}
+    std::stringstream ss[2];
 
-	return 
-	{ 
-		ss[static_cast<int>(ShaderType::VERTEX)].str(),
-		ss[static_cast<int>(ShaderType::FRAGMENT)].str()
-	};
-}
+    ShaderType type = ShaderType::NONE;
 
-uint32_t GeRendering::Resources::Loaders::ShaderLoader::CreateProgram(const std::string& p_vertexShader, const std::string& p_fragmentShader)
-{
-	const uint32_t program = glCreateProgram();
+    while (std::getline(stream, line))
+    {
+      if (line.find("#shader") != std::string::npos)
+      {
+        if (line.find("vertex") != std::string::npos) type = ShaderType::VERTEX;
+        else if (line.find("fragment") != std::string::npos) type = ShaderType::FRAGMENT;
+      }
+      else if (type != ShaderType::NONE)
+      {
+        ss[static_cast<int>(type)] << line << '\n';
+      }
+    }
 
-	const uint32_t vs = CompileShader(GL_VERTEX_SHADER, p_vertexShader);
-	const uint32_t fs = CompileShader(GL_FRAGMENT_SHADER, p_fragmentShader);
+    return
+    {
+      ss[static_cast<int>(ShaderType::VERTEX)].str(),
+      ss[static_cast<int>(ShaderType::FRAGMENT)].str()
+    };
+  }
 
-	if (vs == 0 || fs == 0)
-		return 0;
+  uint32_t Loaders::ShaderLoader::CreateProgram(const std::string& p_vertexShader, const std::string& p_fragmentShader)
+  {
+    const uint32_t program = glCreateProgram();
 
-	glAttachShader(program, vs);
-	glAttachShader(program, fs);
-	glLinkProgram(program);
+    const uint32_t vs = CompileShader(GL_VERTEX_SHADER, p_vertexShader);
+    const uint32_t fs = CompileShader(GL_FRAGMENT_SHADER, p_fragmentShader);
 
-	GLint linkStatus;
-	glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
+    if (vs == 0 || fs == 0)
+      return 0;
 
-	if (linkStatus == GL_FALSE)
-	{
-		GLint maxLength;
-		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
+    glAttachShader(program, vs);
+    glAttachShader(program, fs);
+    glLinkProgram(program);
 
-		std::string errorLog(maxLength, ' ');
-		glGetProgramInfoLog(program, maxLength, &maxLength, errorLog.data());
+    GLint linkStatus;
+    glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
 
-		//OVLOG_ERROR("[LINK] \"" + __FILE_TRACE + "\":\n" + errorLog);
+    //如果GL连接失败，返回错误信息
+    if (linkStatus == GL_FALSE)
+    {
+      GLint maxLength;
+      glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
 
-		glDeleteProgram(program);
+      std::string errorLog(maxLength, ' ');
+      glGetProgramInfoLog(program, maxLength, &maxLength, errorLog.data());
 
-		return 0;
-	}
+      glDeleteProgram(program);
 
-	glValidateProgram(program);
-	glDeleteShader(vs);
-	glDeleteShader(fs);
+      return 0;
+    }
 
-	return program;
-}
+    glValidateProgram(program);
+    glDeleteShader(vs);
+    glDeleteShader(fs);
 
-uint32_t GeRendering::Resources::Loaders::ShaderLoader::CompileShader(uint32_t p_type, const std::string& p_source)
-{
-	const uint32_t id = glCreateShader(p_type);
+    //返回创建成功的GL程序
+    return program;
+  }
 
-	const char* src = p_source.c_str();
+  uint32_t Loaders::ShaderLoader::CompileShader(uint32_t p_type, const std::string& p_source)
+  {
+    const uint32_t id = glCreateShader(p_type);
 
-	glShaderSource(id, 1, &src, nullptr);
+    const char* src = p_source.c_str();
 
-	glCompileShader(id);
+    glShaderSource(id, 1, &src, nullptr);
 
-	GLint compileStatus;
-	glGetShaderiv(id, GL_COMPILE_STATUS, &compileStatus);
+    glCompileShader(id);
 
-	if (compileStatus == GL_FALSE)
-	{
-		GLint maxLength;
-		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &maxLength);
+    GLint compileStatus;
+    glGetShaderiv(id, GL_COMPILE_STATUS, &compileStatus);
 
-		std::string errorLog(maxLength, ' ');
-		glGetShaderInfoLog(id, maxLength, &maxLength, errorLog.data());
+    if (compileStatus == GL_FALSE)
+    {
+      GLint maxLength;
+      glGetShaderiv(id, GL_INFO_LOG_LENGTH, &maxLength);
 
-		std::string shaderTypeString = p_type == GL_VERTEX_SHADER ? "VERTEX SHADER" : "FRAGMENT SHADER";
-		std::string errorHeader = "[" + shaderTypeString + "] \"";
-		//OVLOG_ERROR(errorHeader + __FILE_TRACE + "\":\n" + errorLog);
+      std::string errorLog(maxLength, ' ');
+      glGetShaderInfoLog(id, maxLength, &maxLength, errorLog.data());
 
-		glDeleteShader(id);
+      std::string shaderTypeString = p_type == GL_VERTEX_SHADER ? "VERTEX SHADER" : "FRAGMENT SHADER";
+      std::string errorHeader = "[" + shaderTypeString + "] \"";
+      //OVLOG_ERROR(errorHeader + __FILE_TRACE + "\":\n" + errorLog);
 
-		return 0;
-	}
+      glDeleteShader(id);
 
-	return id;
+      return 0;
+    }
+
+    return id;
+  }
+
 }

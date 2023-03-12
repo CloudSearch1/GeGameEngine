@@ -1,11 +1,11 @@
 #include <GL/glew.h>
 
-//#include <GeDebug/Logger.h>
 
 #include "GeRendering/Resources/Texture.h"
 #include "GeRendering/Resources/Shader.h"
 
-GeRendering::Resources::Shader::Shader(const std::string p_path, uint32_t p_id) : path(p_path), id(p_id)
+GeRendering::Resources::Shader::Shader(const std::string p_path, uint32_t p_id)
+  : path(p_path), id(p_id)
 {
 	QueryUniforms();
 }

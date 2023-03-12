@@ -1,45 +1,50 @@
 #include "GeRendering/Resources/Loaders/ModelLoader.h"
 
-GeRendering::Resources::Parsers::AssimpParser GeRendering::Resources::Loaders::ModelLoader::__ASSIMP;
 
-GeRendering::Resources::Model* GeRendering::Resources::Loaders::ModelLoader::Create(const std::string& p_filepath, Parsers::EModelParserFlags p_parserFlags)
+namespace GeRendering::Resources
 {
-	Model* result = new Model(p_filepath);
+  GeRendering::Resources::Parsers::AssimpParser GeRendering::Resources::Loaders::ModelLoader::__ASSIMP;
 
-	if (__ASSIMP.LoadModel(p_filepath, result->m_meshes, result->m_materialNames, p_parserFlags))
-	{
-		result->ComputeBoundingSphere();
-		return result;
-	}
+  GeRendering::Resources::Model* GeRendering::Resources::Loaders::ModelLoader::Create(const std::string& p_filepath, Parsers::EModelParserFlags p_parserFlags)
+  {
+    Model* result = new Model(p_filepath);
 
-	delete result;
+    if (__ASSIMP.LoadModel(p_filepath, result->m_meshes, result->m_materialNames, p_parserFlags))
+    {
+      result->ComputeBoundingSphere();
+      return result;
+    }
 
-	return nullptr;
-}
+    delete result;
 
-void GeRendering::Resources::Loaders::ModelLoader::Reload(Model& p_model, const std::string& p_filePath, Parsers::EModelParserFlags p_parserFlags)
-{
-	Model* newModel = Create(p_filePath, p_parserFlags);
+    return nullptr;
+  }
 
-	if (newModel)
-	{
-		p_model.m_meshes = newModel->m_meshes;
-		p_model.m_materialNames = newModel->m_materialNames;
-        p_model.m_boundingSphere = newModel->m_boundingSphere;
-		newModel->m_meshes.clear();
-		delete newModel;
-	}
-}
+  void GeRendering::Resources::Loaders::ModelLoader::Reload(Model& p_model, const std::string& p_filePath, Parsers::EModelParserFlags p_parserFlags)
+  {
+    Model* newModel = Create(p_filePath, p_parserFlags);
 
-bool GeRendering::Resources::Loaders::ModelLoader::Destroy(Model*& p_modelInstance)
-{
-	if (p_modelInstance)
-	{
-		delete p_modelInstance;
-		p_modelInstance = nullptr;
+    if (newModel)
+    {
+      p_model.m_meshes = newModel->m_meshes;
+      p_model.m_materialNames = newModel->m_materialNames;
+      p_model.m_boundingSphere = newModel->m_boundingSphere;
+      newModel->m_meshes.clear();
+      delete newModel;
+    }
+  }
 
-		return true;
-	}
+  bool GeRendering::Resources::Loaders::ModelLoader::Destroy(Model*& p_modelInstance)
+  {
+    if (p_modelInstance)
+    {
+      delete p_modelInstance;
+      p_modelInstance = nullptr;
 
-	return false;
+      return true;
+    }
+
+    return false;
+  }
+
 }
