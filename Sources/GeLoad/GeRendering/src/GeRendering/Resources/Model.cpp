@@ -7,7 +7,8 @@ const GeRendering::Geometry::BoundingSphere& GeRendering::Resources::Model::GetB
 	return m_boundingSphere;
 }
 
-GeRendering::Resources::Model::Model(const std::string & p_path) : path(p_path)
+GeRendering::Resources::Model::Model(const std::string & p_path)
+  : path(p_path)
 {
 }
 

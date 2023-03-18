@@ -99,6 +99,7 @@ namespace GeRendering::Resources
   {
     Texture* newTexture = Create(p_filePath, p_firstFilter, p_secondFilter, p_generateMipmap);
 
+    //用const_cast实现对const指针的修改
     if (newTexture)
     {
       glDeleteTextures(1, &p_texture.id);

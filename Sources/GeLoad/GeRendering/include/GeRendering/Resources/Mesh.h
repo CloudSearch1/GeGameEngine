@@ -35,6 +35,7 @@ namespace GeRendering::Resources
 
 	private:
 		void CreateBuffers(const std::vector<Geometry::Vertex>& p_vertices, const std::vector<uint32_t>& p_indices);
+    //计算包围球-Ritter方法
 		void ComputeBoundingSphere(const std::vector<Geometry::Vertex>& p_vertices);
 
 	private:

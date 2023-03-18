@@ -3,9 +3,9 @@
 
 namespace GeRendering::Resources
 {
-  GeRendering::Resources::Parsers::AssimpParser GeRendering::Resources::Loaders::ModelLoader::__ASSIMP;
+  Parsers::AssimpParser Loaders::ModelLoader::__ASSIMP;
 
-  GeRendering::Resources::Model* GeRendering::Resources::Loaders::ModelLoader::Create(const std::string& p_filepath, Parsers::EModelParserFlags p_parserFlags)
+  Model* Loaders::ModelLoader::Create(const std::string& p_filepath, Parsers::EModelParserFlags p_parserFlags)
   {
     Model* result = new Model(p_filepath);
 
@@ -20,7 +20,7 @@ namespace GeRendering::Resources
     return nullptr;
   }
 
-  void GeRendering::Resources::Loaders::ModelLoader::Reload(Model& p_model, const std::string& p_filePath, Parsers::EModelParserFlags p_parserFlags)
+  void Loaders::ModelLoader::Reload(Model& p_model, const std::string& p_filePath, Parsers::EModelParserFlags p_parserFlags)
   {
     Model* newModel = Create(p_filePath, p_parserFlags);
 
@@ -34,7 +34,7 @@ namespace GeRendering::Resources
     }
   }
 
-  bool GeRendering::Resources::Loaders::ModelLoader::Destroy(Model*& p_modelInstance)
+  bool Loaders::ModelLoader::Destroy(Model*& p_modelInstance)
   {
     if (p_modelInstance)
     {

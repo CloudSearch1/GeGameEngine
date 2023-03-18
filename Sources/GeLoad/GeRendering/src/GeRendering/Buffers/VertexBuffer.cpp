@@ -13,7 +13,8 @@ namespace GeRendering::Buffers
   }
 
   template<class T>
-  VertexBuffer<T>::VertexBuffer(std::vector<T>& p_data) : VertexBuffer(p_data.data(), p_data.size())
+  VertexBuffer<T>::VertexBuffer(std::vector<T>& p_data)
+    : VertexBuffer(p_data.data(), p_data.size())
   {
   }
 
