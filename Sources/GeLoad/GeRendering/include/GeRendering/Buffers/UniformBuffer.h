@@ -4,7 +4,7 @@
 #include <string>
 
 #include "GeRendering/Context/Driver.h"
-#include "GeRendering/Buffers/AccessSpecifier.h"
+#include "GeRendering/Buffers/EAccessSpecifier.h"
 
 namespace GeRendering::Resources { class Shader; }
 
@@ -20,12 +20,7 @@ namespace GeRendering::Buffers
 		* @parma p_offset UBO的偏移量,等于UBO的大小(如果size不为0)
 		* @param p_accessSpecifier
 		*/
-		UniformBuffer(
-      size_t p_size,
-      uint32_t p_bindingPoint = 0,
-      uint32_t p_offset = 0,
-      AccessSpecifier p_accessSpecifier = AccessSpecifier::DYNAMIC_DRAW
-    );
+		UniformBuffer(size_t p_size, uint32_t p_bindingPoint = 0, uint32_t p_offset = 0, EAccessSpecifier p_accessSpecifier = EAccessSpecifier::DYNAMIC_DRAW);
 		~UniformBuffer();
 		void Bind();
 		void Unbind();
@@ -53,3 +48,5 @@ namespace GeRendering::Buffers
 		uint32_t m_bufferID;
 	};
 }
+
+#include "GeRendering/Buffers/UniformBuffer.inl"

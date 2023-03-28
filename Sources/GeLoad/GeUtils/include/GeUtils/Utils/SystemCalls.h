@@ -8,6 +8,7 @@ namespace GeUtils::Utils
 	class SystemCalls
 	{
 	public:
+
     //禁用构造函数
     SystemCalls() = delete;
 

@@ -44,6 +44,7 @@ const GeRendering::Geometry::BoundingSphere& GeRendering::Resources::Mesh::GetBo
 void GeRendering::Resources::Mesh::CreateBuffers(const std::vector<Geometry::Vertex>& p_vertices, const std::vector<uint32_t>& p_indices)
 {
 	std::vector<float> vertexData;
+
 	std::vector<unsigned int> rawIndices;
 
 	for (const auto& vertex : p_vertices)
@@ -68,7 +69,7 @@ void GeRendering::Resources::Mesh::CreateBuffers(const std::vector<Geometry::Ver
 		vertexData.push_back(vertex.bitangent[2]);
 	}
 
-	m_vertexBuffer = std::make_unique<Buffers::VertexBuffer<float>>(vertexData);
+	m_vertexBuffer	= std::make_unique<Buffers::VertexBuffer<float>>(vertexData);
 	m_indexBuffer	= std::make_unique<Buffers::IndexBuffer>(const_cast<uint32_t*>(p_indices.data()), p_indices.size());
 
 	uint64_t vertexSize = sizeof(Geometry::Vertex);

@@ -1,4 +1,3 @@
-#pragma once
 #include <vector>
 
 
@@ -6,6 +5,7 @@
 #include "GeRendering/Resources/Mesh.h"
 #include "GeRendering/Resources/Parsers/IModelParser.h"
 
+#pragma once
 
 namespace GeRendering::Resources::Parsers
 {

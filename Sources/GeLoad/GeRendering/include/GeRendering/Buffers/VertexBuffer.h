@@ -24,3 +24,5 @@ namespace GeRendering::Buffers
 		uint32_t m_bufferID;
 	};
 }
+
+#include "GeRendering/Buffers/VertexBuffer.inl"

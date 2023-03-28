@@ -7,7 +7,6 @@
 
 namespace GeRendering::Resources
 {
-  //Uniform数据结构
 	struct UniformInfo
 	{
 		UniformType		type;

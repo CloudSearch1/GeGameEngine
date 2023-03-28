@@ -1,7 +1,6 @@
 #pragma once
 
 #include "GeRendering/Buffers/VertexBuffer.h"
-#include <GL/glew.h>
 
 namespace GeRendering::Buffers
 {
@@ -35,3 +34,5 @@ namespace GeRendering::Buffers
 		GLuint m_bufferID;
 	};
 }
+
+#include "GeRendering/Buffers/VertexArray.inl"

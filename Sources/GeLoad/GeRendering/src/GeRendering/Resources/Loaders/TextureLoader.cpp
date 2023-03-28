@@ -5,127 +5,120 @@
 
 #include "GeRendering/Resources/Loaders/TextureLoader.h"
 
-namespace GeRendering::Resources
+GeRendering::Resources::Texture* GeRendering::Resources::Loaders::TextureLoader::Create(const std::string& p_filepath, GeRendering::Settings::ETextureFilteringMode p_firstFilter, GeRendering::Settings::ETextureFilteringMode p_secondFilter, bool p_generateMipmap)
 {
+	GLuint textureID;
+	int textureWidth;
+	int textureHeight;
+	int bitsPerPixel;
+	glGenTextures(1, &textureID);
 
-  Texture* Loaders::TextureLoader::Create(const std::string& p_filepath, GeRendering::Settings::ETextureFilteringMode p_firstFilter, GeRendering::Settings::ETextureFilteringMode p_secondFilter, bool p_generateMipmap)
-  {
-    GLuint textureID;
-    int textureWidth;
-    int textureHeight;
-    int bitsPerPixel;
-    glGenTextures(1, &textureID);
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char* dataBuffer = stbi_load(p_filepath.c_str(), &textureWidth, &textureHeight, &bitsPerPixel, 4);
 
-    stbi_set_flip_vertically_on_load(true);
-    unsigned char* dataBuffer = stbi_load(p_filepath.c_str(), &textureWidth, &textureHeight, &bitsPerPixel, 4);
+	if (dataBuffer)
+	{
+		glBindTexture(GL_TEXTURE_2D, textureID);
 
-    if (dataBuffer)
-    {
-      glBindTexture(GL_TEXTURE_2D, textureID);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, dataBuffer);
 
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, dataBuffer);
+		if (p_generateMipmap)
+		{
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
+		
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(p_firstFilter));
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(p_secondFilter));
 
-      if (p_generateMipmap)
-      {
-        glGenerateMipmap(GL_TEXTURE_2D);
-      }
+		stbi_image_free(dataBuffer);
+		glBindTexture(GL_TEXTURE_2D, 0);
 
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(p_firstFilter));
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(p_secondFilter));
+		return new Texture(p_filepath, textureID, textureWidth, textureHeight, bitsPerPixel, p_firstFilter, p_secondFilter, p_generateMipmap);
+	}
+	else
+	{
+		stbi_image_free(dataBuffer);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		return nullptr;
+	}
+}
 
-      stbi_image_free(dataBuffer);
-      glBindTexture(GL_TEXTURE_2D, 0);
+GeRendering::Resources::Texture* GeRendering::Resources::Loaders::TextureLoader::CreateColor(uint32_t p_data, GeRendering::Settings::ETextureFilteringMode p_firstFilter, GeRendering::Settings::ETextureFilteringMode p_secondFilter, bool p_generateMipmap)
+{
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
 
-      return new Texture(p_filepath, textureID, textureWidth, textureHeight, bitsPerPixel, p_firstFilter, p_secondFilter, p_generateMipmap);
-    }
-    else
-    {
-      //如果dataBuffer为空
-      stbi_image_free(dataBuffer);
-      glBindTexture(GL_TEXTURE_2D, 0);
-      return nullptr;
-    }
-  }
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &p_data);
 
-  Texture* Loaders::TextureLoader::CreateColor(uint32_t p_data, GeRendering::Settings::ETextureFilteringMode p_firstFilter, GeRendering::Settings::ETextureFilteringMode p_secondFilter, bool p_generateMipmap)
-  {
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
+	if (p_generateMipmap)
+	{
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &p_data);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(p_firstFilter));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(p_secondFilter));
 
-    if (p_generateMipmap)
-    {
-      glGenerateMipmap(GL_TEXTURE_2D);
-    }
+	glBindTexture(GL_TEXTURE_2D, 0);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(p_firstFilter));
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(p_secondFilter));
+	return new Texture("", textureID, 1, 1, 32, p_firstFilter, p_secondFilter, p_generateMipmap);
+}
 
-    glBindTexture(GL_TEXTURE_2D, 0);
+GeRendering::Resources::Texture* GeRendering::Resources::Loaders::TextureLoader::CreateFromMemory(uint8_t* p_data, uint32_t p_width, uint32_t p_height, GeRendering::Settings::ETextureFilteringMode p_firstFilter, GeRendering::Settings::ETextureFilteringMode p_secondFilter, bool p_generateMipmap)
+{
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
 
-    return new Texture("", textureID, 1, 1, 32, p_firstFilter, p_secondFilter, p_generateMipmap);
-  }
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, p_width, p_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, p_data);
 
-  Texture* Loaders::TextureLoader::CreateFromMemory(uint8_t* p_data, uint32_t p_width, uint32_t p_height, GeRendering::Settings::ETextureFilteringMode p_firstFilter, GeRendering::Settings::ETextureFilteringMode p_secondFilter, bool p_generateMipmap)
-  {
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
+	if (p_generateMipmap)
+	{
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, p_width, p_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, p_data);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(p_firstFilter));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(p_secondFilter));
 
-    if (p_generateMipmap)
-    {
-      glGenerateMipmap(GL_TEXTURE_2D);
-    }
+	glBindTexture(GL_TEXTURE_2D, 0);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(p_firstFilter));
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(p_secondFilter));
+	return new Texture("", textureID, 1, 1, 32, p_firstFilter, p_secondFilter, p_generateMipmap);
+}
 
-    glBindTexture(GL_TEXTURE_2D, 0);
+void GeRendering::Resources::Loaders::TextureLoader::Reload(Texture& p_texture, const std::string& p_filePath, GeRendering::Settings::ETextureFilteringMode p_firstFilter, GeRendering::Settings::ETextureFilteringMode p_secondFilter, bool p_generateMipmap)
+{
+	Texture* newTexture = Create(p_filePath, p_firstFilter, p_secondFilter, p_generateMipmap);
 
-    return new Texture("", textureID, 1, 1, 32, p_firstFilter, p_secondFilter, p_generateMipmap);
-  }
+	if (newTexture)
+	{
+		glDeleteTextures(1, &p_texture.id);
 
-  void Loaders::TextureLoader::Reload(Texture& p_texture, const std::string& p_filePath, GeRendering::Settings::ETextureFilteringMode p_firstFilter, GeRendering::Settings::ETextureFilteringMode p_secondFilter, bool p_generateMipmap)
-  {
-    Texture* newTexture = Create(p_filePath, p_firstFilter, p_secondFilter, p_generateMipmap);
+		*const_cast<uint32_t*>(&p_texture.id) = newTexture->id;
+		*const_cast<uint32_t*>(&p_texture.width) = newTexture->width;
+		*const_cast<uint32_t*>(&p_texture.height) = newTexture->height;
+		*const_cast<uint32_t*>(&p_texture.bitsPerPixel) = newTexture->bitsPerPixel;
+		*const_cast<Settings::ETextureFilteringMode*>(&p_texture.firstFilter) = newTexture->firstFilter;
+		*const_cast<Settings::ETextureFilteringMode*>(&p_texture.secondFilter) = newTexture->secondFilter;
+		*const_cast<bool*>(&p_texture.isMimapped) = newTexture->isMimapped;
+		delete newTexture;
+	}
+}
 
-    //用const_cast实现对const指针的修改
-    if (newTexture)
-    {
-      glDeleteTextures(1, &p_texture.id);
+bool GeRendering::Resources::Loaders::TextureLoader::Destroy(Texture*& p_textureInstance)
+{
+	if (p_textureInstance)
+	{
+		glDeleteTextures(1, &p_textureInstance->id);
+		delete p_textureInstance;
+		p_textureInstance = nullptr;
+		return true;
+	}
 
-      *const_cast<uint32_t*>(&p_texture.id) = newTexture->id;
-      *const_cast<uint32_t*>(&p_texture.width) = newTexture->width;
-      *const_cast<uint32_t*>(&p_texture.height) = newTexture->height;
-      *const_cast<uint32_t*>(&p_texture.bitsPerPixel) = newTexture->bitsPerPixel;
-      *const_cast<Settings::ETextureFilteringMode*>(&p_texture.firstFilter) = newTexture->firstFilter;
-      *const_cast<Settings::ETextureFilteringMode*>(&p_texture.secondFilter) = newTexture->secondFilter;
-      *const_cast<bool*>(&p_texture.isMimapped) = newTexture->isMimapped;
-      delete newTexture;
-    }
-  }
-
-  bool Loaders::TextureLoader::Destroy(Texture*& p_textureInstance)
-  {
-    if (p_textureInstance)
-    {
-      glDeleteTextures(1, &p_textureInstance->id);
-      delete p_textureInstance;
-      p_textureInstance = nullptr;
-      return true;
-    }
-
-    return false;
-  }
-
+	return false;
 }

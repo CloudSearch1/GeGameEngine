@@ -1,11 +1,13 @@
 #pragma once
 
+
+
 namespace GeRendering::Settings
 {
   //OpenGL渲染能力枚举类
 	enum class ERenderingCapability
 	{
-		BLEND						          = 0x0BE2,//混合模式
+		BLEND						          = 0x0BE2,
 		CULL_FACE					        = 0x0B44,
 		DEPTH_TEST				        = 0x0B71,
 		DITHER						        = 0x0BD0,

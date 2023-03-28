@@ -18,6 +18,8 @@ namespace GeRendering::Context
 
 	private:
 		void InitGlew();
+    //返回gl程序状态信息
+		static void __stdcall GLDebugMessageCallback(uint32_t source, uint32_t type, uint32_t id, uint32_t severity, int32_t length, const char* message, const void* userParam);
 
 	private:
 		bool m_isActive;

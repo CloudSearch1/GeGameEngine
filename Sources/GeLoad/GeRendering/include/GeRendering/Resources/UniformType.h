@@ -4,7 +4,7 @@
 
 namespace GeRendering::Resources
 {
-  //Unifrom类型枚举类
+
 	enum class UniformType : uint32_t
 	{
 		UNIFORM_BOOL			    = 0x8B56,

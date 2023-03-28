@@ -28,7 +28,7 @@ namespace GeRendering::Resources
 	private:
 		Model(const std::string& p_path);
 		~Model();
-    //计算包围球-Ritter方法
+
 		void ComputeBoundingSphere();
 
 	public:

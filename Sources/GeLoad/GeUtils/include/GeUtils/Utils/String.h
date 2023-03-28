@@ -6,6 +6,7 @@
 
 namespace GeUtils::Utils
 {
+  //处理随机数生成
 	class String
 	{
 	public:

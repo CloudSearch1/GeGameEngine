@@ -1,15 +1,19 @@
+#include <GeRendering/Utils/Defines.h>
+
+#include "GeGame/Core/Application.h"
+
+FORCE_DEDICATED_GPU
+
+#ifdef _DEBUG
+int main()
+#else
+#undef APIENTRY
 #include "Windows.h"
-
-int main(int argc, char** argv);
-
-#ifndef _DEBUG
 INT WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nCmdShow)
-{
-  main(__argc, __argv);
-}
 #endif
-
-
-int main(int argc, char** argv)
 {
+	GeGame::Core::Application app;
+	app.Run();
+
+	return EXIT_SUCCESS;
 }

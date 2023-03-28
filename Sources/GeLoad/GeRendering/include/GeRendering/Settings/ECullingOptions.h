@@ -12,12 +12,12 @@ namespace GeRendering::Settings
 		FRUSTUM_PER_MESH	= 0x2
 	};
 
-	ECullingOptions operator~ (ECullingOptions a)                        { return (ECullingOptions)~(int)a; }
-	ECullingOptions operator| (ECullingOptions a, ECullingOptions b)     { return (ECullingOptions)((int)a | (int)b); }
-	ECullingOptions operator& (ECullingOptions a, ECullingOptions b)     { return (ECullingOptions)((int)a & (int)b); }
-	ECullingOptions operator^ (ECullingOptions a, ECullingOptions b)     { return (ECullingOptions)((int)a ^ (int)b); }
-	ECullingOptions& operator|= (ECullingOptions& a, ECullingOptions b)  { return (ECullingOptions&)((int&)a |= (int)b); }
-	ECullingOptions& operator&= (ECullingOptions& a, ECullingOptions b)  { return (ECullingOptions&)((int&)a &= (int)b); }
-	ECullingOptions& operator^= (ECullingOptions& a, ECullingOptions b)  { return (ECullingOptions&)((int&)a ^= (int)b); }
-	bool IsFlagSet(ECullingOptions p_flag, ECullingOptions p_mask)       { return (int)p_flag & (int)p_mask; }
+	inline ECullingOptions operator~ (ECullingOptions a)                        { return (ECullingOptions)~(int)a; }
+	inline ECullingOptions operator| (ECullingOptions a, ECullingOptions b)     { return (ECullingOptions)((int)a | (int)b); }
+	inline ECullingOptions operator& (ECullingOptions a, ECullingOptions b)     { return (ECullingOptions)((int)a & (int)b); }
+	inline ECullingOptions operator^ (ECullingOptions a, ECullingOptions b)     { return (ECullingOptions)((int)a ^ (int)b); }
+	inline ECullingOptions& operator|= (ECullingOptions& a, ECullingOptions b)  { return (ECullingOptions&)((int&)a |= (int)b); }
+	inline ECullingOptions& operator&= (ECullingOptions& a, ECullingOptions b)  { return (ECullingOptions&)((int&)a &= (int)b); }
+	inline ECullingOptions& operator^= (ECullingOptions& a, ECullingOptions b)  { return (ECullingOptions&)((int&)a ^= (int)b); }
+	inline bool IsFlagSet(ECullingOptions p_flag, ECullingOptions p_mask)       { return (int)p_flag & (int)p_mask; }
 }
